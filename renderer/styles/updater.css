@@ -1,0 +1,563 @@
+/* Auto-Updater Styles - Shadcn/UI Inspired */
+
+.updater-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.updater-container.hidden {
+    display: none;
+}
+
+.updater-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+}
+
+.updater-dialog {
+    position: relative;
+    background: hsl(0 0% 100%);
+    border: 1px solid hsl(214.3 31.8% 91.4%);
+    border-radius: 12px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
+    max-width: 520px;
+    width: 90vw;
+    max-height: 85vh;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+
+[data-theme="dark"] .updater-dialog {
+    background: hsl(222.2 84% 4.9%);
+    border-color: hsl(217.2 32.6% 17.5%);
+    color: hsl(210 40% 98%);
+}
+
+.updater-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 24px 0;
+    margin-bottom: 20px;
+}
+
+.updater-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: hsl(222.2 84% 4.9%);
+}
+
+[data-theme="dark"] .updater-title {
+    color: hsl(210 40% 98%);
+}
+
+.updater-icon {
+    width: 24px;
+    height: 24px;
+    color: hsl(221.2 83.2% 53.3%);
+}
+
+.updater-close {
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: hsl(215.4 16.3% 46.9%);
+    transition: all 0.15s ease;
+}
+
+.updater-close:hover {
+    background: hsl(210 40% 96%);
+    color: hsl(222.2 84% 4.9%);
+}
+
+[data-theme="dark"] .updater-close:hover {
+    background: hsl(217.2 32.6% 17.5%);
+    color: hsl(210 40% 98%);
+}
+
+.updater-content {
+    padding: 0 24px 24px;
+}
+
+.updater-section {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.updater-section.hidden {
+    display: none;
+}
+
+/* Update Available Section */
+.update-info h4 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: hsl(142.1 76.2% 36.3%);
+}
+
+.update-info p {
+    margin: 0 0 20px;
+    color: hsl(215.4 16.3% 46.9%);
+    line-height: 1.5;
+}
+
+[data-theme="dark"] .update-info p {
+    color: hsl(215 20.2% 65.1%);
+}
+
+.release-notes {
+    background: hsl(210 40% 98%);
+    border: 1px solid hsl(214.3 31.8% 91.4%);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+[data-theme="dark"] .release-notes {
+    background: hsl(217.2 32.6% 17.5%);
+    border-color: hsl(217.2 32.6% 17.5%);
+}
+
+.release-notes h5 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: hsl(222.2 84% 4.9%);
+}
+
+[data-theme="dark"] .release-notes h5 {
+    color: hsl(210 40% 98%);
+}
+
+.release-notes #release-notes-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: hsl(215.4 16.3% 46.9%);
+}
+
+[data-theme="dark"] .release-notes #release-notes-content {
+    color: hsl(215 20.2% 65.1%);
+}
+
+/* Download Progress Section */
+.download-progress h4 {
+    margin: 0 0 24px;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.progress-container {
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: hsl(210 40% 96%);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+[data-theme="dark"] .progress-bar {
+    background: hsl(217.2 32.6% 17.5%);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, hsl(221.2 83.2% 53.3%), hsl(262.1 83.3% 57.8%));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(215.4 16.3% 46.9%);
+}
+
+[data-theme="dark"] .progress-text {
+    color: hsl(215 20.2% 65.1%);
+}
+
+.download-details {
+    text-align: center;
+    font-size: 13px;
+    color: hsl(215.4 16.3% 46.9%);
+    margin-top: 8px;
+}
+
+[data-theme="dark"] .download-details {
+    color: hsl(215 20.2% 65.1%);
+}
+
+/* Ready to Install Section */
+.install-ready {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.success-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    color: hsl(142.1 76.2% 36.3%);
+    font-size: 64px;
+}
+
+.install-ready h4 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: hsl(142.1 76.2% 36.3%);
+}
+
+.install-ready p {
+    margin: 0;
+    color: hsl(215.4 16.3% 46.9%);
+    line-height: 1.5;
+}
+
+[data-theme="dark"] .install-ready p {
+    color: hsl(215 20.2% 65.1%);
+}
+
+/* Checking Section */
+.checking-updates {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 20px;
+    border: 4px solid hsl(210 40% 96%);
+    border-top: 4px solid hsl(221.2 83.2% 53.3%);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+[data-theme="dark"] .loading-spinner {
+    border-color: hsl(217.2 32.6% 17.5%);
+    border-top-color: hsl(221.2 83.2% 53.3%);
+}
+
+.checking-updates h4 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.checking-updates p {
+    margin: 0;
+    color: hsl(215.4 16.3% 46.9%);
+}
+
+[data-theme="dark"] .checking-updates p {
+    color: hsl(215 20.2% 65.1%);
+}
+
+/* No Updates Section */
+.no-updates {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.check-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    color: hsl(142.1 76.2% 36.3%);
+    font-size: 64px;
+}
+
+.no-updates h4 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: hsl(142.1 76.2% 36.3%);
+}
+
+.no-updates p {
+    margin: 0 0 16px;
+    color: hsl(215.4 16.3% 46.9%);
+}
+
+[data-theme="dark"] .no-updates p {
+    color: hsl(215 20.2% 65.1%);
+}
+
+.current-version {
+    font-size: 14px;
+    font-weight: 500;
+    color: hsl(215.4 16.3% 46.9%);
+    background: hsl(210 40% 98%);
+    padding: 8px 16px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+[data-theme="dark"] .current-version {
+    color: hsl(215 20.2% 65.1%);
+    background: hsl(217.2 32.6% 17.5%);
+}
+
+/* Error Section */
+.error-info {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.error-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    color: hsl(0 84.2% 60.2%);
+    font-size: 64px;
+}
+
+.error-info h4 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: hsl(0 84.2% 60.2%);
+}
+
+.error-info p {
+    margin: 0;
+    color: hsl(215.4 16.3% 46.9%);
+    line-height: 1.5;
+}
+
+[data-theme="dark"] .error-info p {
+    color: hsl(215 20.2% 65.1%);
+}
+
+/* Button Styles */
+.updater-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-primary,
+.btn-secondary {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+}
+
+.btn-primary {
+    background: hsl(221.2 83.2% 53.3%);
+    color: hsl(210 40% 98%);
+}
+
+.btn-primary:hover {
+    background: hsl(221.2 83.2% 48%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: hsl(210 40% 96%);
+    color: hsl(222.2 84% 4.9%);
+    border: 1px solid hsl(214.3 31.8% 91.4%);
+}
+
+.btn-secondary:hover {
+    background: hsl(210 40% 92%);
+    border-color: hsl(214.3 31.8% 85%);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background: hsl(217.2 32.6% 17.5%);
+    color: hsl(210 40% 98%);
+    border-color: hsl(217.2 32.6% 25%);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: hsl(217.2 32.6% 22%);
+    border-color: hsl(217.2 32.6% 30%);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(0) scale(1);
+    }
+}
+
+.updater-dialog {
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Body class when updater is open */
+body.updater-open {
+    overflow: hidden;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+    .updater-dialog {
+        width: 95vw;
+        margin: 16px;
+        max-height: 90vh;
+    }
+    
+    .updater-header {
+        padding: 16px 16px 0;
+        margin-bottom: 16px;
+    }
+    
+    .updater-content {
+        padding: 0 16px 16px;
+    }
+    
+    .updater-title {
+        font-size: 18px;
+    }
+    
+    .updater-actions {
+        flex-direction: column;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        flex: none;
+    }
+}
+
+/* Update notification badge (for future use) */
+.update-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: hsl(0 84.2% 60.2%);
+    color: white;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

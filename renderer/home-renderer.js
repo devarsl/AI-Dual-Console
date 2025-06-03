@@ -892,3 +892,88 @@ window.urlBlockingAPI = {
     isRestrictedUrl,
     getRestrictedUrls: () => [...RESTRICTED_URLS] // Return copy of array
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add update check button to header (optional)
+    addUpdateCheckButton();
+    
+    // Add keyboard shortcut for checking updates
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && e.key === 'U') {
+            e.preventDefault();
+            if (window.appUpdater) {
+                window.appUpdater.manualCheckForUpdates();
+            }
+        }
+    });
+});
+
+function addUpdateCheckButton() {
+    const userInfo = document.querySelector('.user-info');
+    if (userInfo) {
+        const updateButton = document.createElement('button');
+        updateButton.className = 'update-check-btn';
+        updateButton.title = 'Check for Updates (Ctrl+Shift+U)';
+        updateButton.innerHTML = '<i class="fas fa-sync-alt"></i>';
+        
+        updateButton.addEventListener('click', () => {
+            if (window.appUpdater) {
+                window.appUpdater.manualCheckForUpdates();
+            }
+        });
+        
+        // Insert before theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        userInfo.insertBefore(updateButton, themeToggle);
+    }
+}
+
+// Add CSS for the update button (add this to your home.css)
+const updateButtonStyles = `
+.update-check-btn {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+.update-check-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transform: rotate(180deg);
+}
+
+.update-check-btn:active {
+    transform: rotate(180deg) scale(0.95);
+}
+
+/* Add update notification dot */
+.update-check-btn.has-update {
+    position: relative;
+}
+
+.update-check-btn.has-update::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+`;
+
+// Inject styles
+const style = document.createElement('style');
+style.textContent = updateButtonStyles;
+document.head.appendChild(style);

@@ -1,5 +1,6 @@
 // main/main.js
-const { app, BrowserWindow, ipcMain, dialog, session,Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, session, Menu } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const db = require('./database');
 const bcrypt = require('bcrypt');
@@ -11,8 +12,11 @@ const userSessionPath = path.join(app.getPath('userData'), 'user-session.json');
 
 const SESSION_TIMEOUT = 24 * 60 * 60 * 1000;
 
-function createWindow() {
+// Auto Updater Configuration
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
 
+function createWindow() {
     Menu.setApplicationMenu(null);// to hide toolbar
     
     mainWindow = new BrowserWindow({
@@ -56,7 +60,105 @@ function createWindow() {
             event.preventDefault();
         }
     });
+
+    // Check for updates after window is ready
+    mainWindow.webContents.once('did-finish-load', () => {
+        if (process.env.NODE_ENV !== 'development') {
+            checkForUpdates();
+        }
+    });
 }
+
+// Auto Updater Functions
+function checkForUpdates() {
+    console.log('Checking for updates...');
+    autoUpdater.checkForUpdatesAndNotify();
+}
+
+// Auto Updater Event Handlers
+autoUpdater.on('checking-for-update', () => {
+    console.log('Checking for update...');
+    sendUpdateMessage('checking-for-update');
+});
+
+autoUpdater.on('update-available', (info) => {
+    console.log('Update available:', info);
+    sendUpdateMessage('update-available', {
+        version: info.version,
+        releaseNotes: info.releaseNotes,
+        releaseName: info.releaseName,
+        releaseDate: info.releaseDate
+    });
+});
+
+autoUpdater.on('update-not-available', (info) => {
+    console.log('Update not available:', info);
+    sendUpdateMessage('update-not-available', { version: info.version });
+});
+
+autoUpdater.on('error', (err) => {
+    console.error('Update error:', err);
+    sendUpdateMessage('update-error', { message: err.message });
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+    const message = `Downloaded ${Math.round(progressObj.percent)}% (${Math.round(progressObj.bytesPerSecond / 1024)} KB/s)`;
+    console.log('Download progress:', message);
+    sendUpdateMessage('download-progress', {
+        percent: Math.round(progressObj.percent),
+        bytesPerSecond: Math.round(progressObj.bytesPerSecond / 1024),
+        total: Math.round(progressObj.total / 1024 / 1024),
+        transferred: Math.round(progressObj.transferred / 1024 / 1024)
+    });
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded:', info);
+    sendUpdateMessage('update-downloaded', {
+        version: info.version,
+        releaseNotes: info.releaseNotes
+    });
+});
+
+function sendUpdateMessage(event, data = {}) {
+    if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send('update-message', { event, data });
+    }
+}
+
+// IPC Handlers for Auto Updater
+ipcMain.handle('check-for-updates', () => {
+    if (process.env.NODE_ENV !== 'development') {
+        autoUpdater.checkForUpdatesAndNotify();
+        return { success: true, message: 'Checking for updates...' };
+    } else {
+        return { success: false, message: 'Updates disabled in development mode' };
+    }
+});
+
+ipcMain.handle('download-update', () => {
+    try {
+        autoUpdater.downloadUpdate();
+        return { success: true, message: 'Download started...' };
+    } catch (error) {
+        console.error('Error downloading update:', error);
+        return { success: false, message: error.message };
+    }
+});
+
+ipcMain.handle('install-update', () => {
+    try {
+        autoUpdater.quitAndInstall();
+        return { success: true, message: 'Installing update...' };
+    } catch (error) {
+        console.error('Error installing update:', error);
+        return { success: false, message: error.message };
+    }
+});
+
+ipcMain.handle('get-app-version', () => {
+    return app.getVersion();
+});
 
 // Helper function to switch preload script
 function switchPreloadScript(scriptName) {
@@ -343,134 +445,3 @@ async function saveUserToDB(userData) {
         throw error;
     }
 }
-
-// async function loadCookiesFromFile(cookiesFilePath, partition = 'default') {
-//     try {
-//         if (!fs.existsSync(cookiesFilePath)) {
-//             console.log(`Cookie file not found: ${cookiesFilePath}`);
-//             return false;
-//         }
-
-//         const cookiesData = JSON.parse(fs.readFileSync(cookiesFilePath, 'utf8'));
-//         const ses = partition === 'default' ? session.defaultSession : session.fromPartition(partition);
-
-//         // Clear existing cookies first
-//         await ses.clearStorageData({ storages: ['cookies'] });
-
-//         let successCount = 0;
-//         let errorCount = 0;
-
-//         // Determine the base URL for cookies - FIXED
-//         const baseUrl = cookiesFilePath.includes('claude') ? 'https://claude.ai' : 'https://chatgpt.com';
-
-//         // Load cookies from file
-//         for (const cookie of cookiesData) {
-//             try {
-//                 // Skip invalid cookies
-//                 if (!cookie.name || !cookie.value) {
-//                     errorCount++;
-//                     continue;
-//                 }
-
-//                 // Create basic cookie object
-//                 const cookieDetails = {
-//                     url: baseUrl,
-//                     name: cookie.name,
-//                     value: cookie.value,
-//                     path: cookie.path || '/',
-//                     secure: cookie.secure !== false, // Default to secure for HTTPS
-//                     httpOnly: cookie.httpOnly || false
-//                 };
-
-//                 // Handle sameSite attribute properly
-//                 if (cookie.sameSite) {
-//                     const sameSiteValue = cookie.sameSite.toLowerCase();
-//                     if (['strict', 'lax', 'none'].includes(sameSiteValue)) {
-//                         cookieDetails.sameSite = sameSiteValue;
-//                     }
-//                 }
-
-//                 // Handle domain attribute more carefully
-//                 if (cookie.domain && !cookie.name.startsWith('__Host-')) {
-//                     let domain = cookie.domain;
-
-//                     // Clean and validate domain
-//                     if (domain.startsWith('.')) {
-//                         domain = domain.substring(1);
-//                     }
-
-//                     // Only set domain if it matches our target domain
-//                     if (cookiesFilePath.includes('claude')) {
-//                         if (domain === 'claude.ai' || domain.endsWith('.claude.ai')) {
-//                             cookieDetails.domain = cookie.domain;
-//                         }
-//                     } else {
-//                         if (domain === 'chatgpt.com' || domain.endsWith('.chatgpt.com') ||
-//                             domain === 'openai.com' || domain.endsWith('.openai.com')) {
-//                             cookieDetails.domain = cookie.domain;
-//                         }
-//                     }
-//                 }
-
-//                 // Handle expiration properly
-//                 if (cookie.expirationDate && typeof cookie.expirationDate === 'number' && cookie.expirationDate > 0) {
-//                     cookieDetails.expirationDate = cookie.expirationDate;
-//                 } else if (cookie.expires && typeof cookie.expires === 'number' && cookie.expires > 0) {
-//                     cookieDetails.expirationDate = cookie.expires;
-//                 }
-
-//                 // Try to set the cookie
-//                 await ses.cookies.set(cookieDetails);
-//                 successCount++;
-
-//             } catch (cookieError) {
-//                 errorCount++;
-//                 // Only log the first few errors to avoid spam
-//                 if (errorCount <= 3) {
-//                     console.log(`Skipped cookie "${cookie.name}": ${cookieError.message}`);
-//                 }
-//             }
-//         }
-
-//         if (errorCount > 3) {
-//             console.log(`... and ${errorCount - 3} more cookie errors`);
-//         }
-
-//         console.log(`Cookie loading completed for ${cookiesFilePath}:`);
-//         console.log(`  ✓ ${successCount} cookies loaded successfully`);
-//         console.log(`  ✗ ${errorCount} cookies skipped due to errors`);
-
-//         return successCount > 0;
-//     } catch (error) {
-//         console.error('Error loading cookies from file:', error);
-//         return false;
-//     }
-// }
-
-// ipcMain.handle('load-cookies', async (event, aiType) => {
-//     console.log(`Skipping cookies loading as not a required feature for now if need in future uncomment the required code.`);
-//     try {
-//         let cookiesPath;
-//         let partition;
-
-//         if (aiType === 'claude') {
-//             cookiesPath = claudeCookiesPath;
-//             partition = 'persist:claude';
-//             // Use original function for Claude (it works)
-//             const success = await loadCookiesFromFile(cookiesPath, partition);
-//             return { success, message: success ? 'Cookies loaded successfully' : 'Failed to load cookies' };
-//         }
-//         // else if (aiType === 'gpt') {
-//         //     cookiesPath = gptCookiesPath;
-//         //     partition = 'persist:gpt';
-//         //     const success = await loadChatGPTCookies(cookiesPath, partition);
-//         //     return { success, message: success ? 'ChatGPT cookies loaded successfully' : 'Failed to load ChatGPT cookies' };
-//         // } 
-//         else {
-//             return { success: false, message: 'Invalid AI type' };
-//         }
-//     } catch (error) {
-//         console.error('Error in load-cookies handler:', error);
-//         return { success: false, message: error.message };
-//     }
-// });
