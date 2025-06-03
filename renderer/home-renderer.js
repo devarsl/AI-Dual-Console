@@ -21,7 +21,7 @@ const statusText = document.querySelector('.status-left span:last-child');
 let currentAI = 'claude';
 let gptLoaded = false;
 let sessionCheckInterval;
-
+let claudeLoaded = false;
 // Restricted URLs for ChatGPT - Add more URLs here as needed
 const RESTRICTED_URLS = [
     'https://sora.chatgpt.com',
@@ -695,7 +695,6 @@ async function switchToAI(ai) {
     saveUserPreferences();
 }
 
-// Show Claude webview (simplified without cookie loading)
 async function showClaudeWebview() {
     try {
         updateStatusBar('Loading Claude AI...');
@@ -704,10 +703,15 @@ async function showClaudeWebview() {
         claudeWebview.style.display = 'flex';
         gptWebview.style.display = 'none';
 
-        // Load Claude with fresh session
-        claudeWebview.src = 'https://claude.ai';
-
-        console.log('Claude webview loaded with fresh session');
+        // Only load Claude if it hasn't been loaded yet
+        if (!claudeLoaded) {
+            claudeWebview.partition = 'persist:claude'; // Add partition for session persistence
+            claudeWebview.src = 'https://claude.ai';
+            claudeLoaded = true;
+            console.log('Claude webview loaded with fresh session');
+        } else {
+            console.log('Claude webview already loaded, just showing it');
+        }
 
     } catch (error) {
         console.error('Error loading Claude webview:', error);

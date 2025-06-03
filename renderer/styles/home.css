@@ -172,19 +172,26 @@ body {
     box-shadow: 0 4px 16px var(--shadow-color-dark);
 }
 
+
 #claude-webview,
 #gpt-webview {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
     flex:1;
+    height: 100%;
 }
 #ai-webview {
-    width: 100%;
+
     height: 100%;
-    border: none;
+    border:none;
+}
+.badge {
+  display: inline-block;
+  background-color: #e2e8f0; /* light gray */
+  color: #1a202c; /* dark gray text */
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px; /* pill shape */
+  line-height: 1;
 }
 
 .status-bar {
