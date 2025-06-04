@@ -5,16 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat Assistant</title>
     <link rel="stylesheet" href="./styles/login.css">
+    <style>
+        .password-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-input-container input {
+            padding-right: 45px;
+            width: 100%;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+            user-select: none;
+        }
+        
+        .password-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .eye-icon {
+            color: #666;
+            transition: color 0.2s ease;
+        }
+        
+        .password-toggle:hover .eye-icon {
+            color: #333;
+        }
+        
+        .password-toggle.hidden .eye-icon {
+            opacity: 0.7;
+        }
+        
+        .password-toggle.hidden .eye-icon path:first-child {
+            stroke-dasharray: 6;
+            stroke-dashoffset: 12;
+        }
+    </style>
 </head>
 <body class="login-page">
     <div class="container">
         <div class="headingcontainer">
             <h1>AI Chat Assistant</h1>
             <img src="../icon.svg" alt="" width="45px" height="45px">
-        </div>
-        <div class="tabs">
-            <button class="tab active" data-form="login">Login</button>
-            <button class="tab" data-form="signup">Sign Up</button>
         </div>
 
         <div id="status-message" class="status-message"></div>
@@ -28,33 +71,19 @@
                 </div>
                 <div class="input-group">
                     <label for="login-password">Password</label>
-                    <input type="password" id="login-password" required>
+                    <div class="password-input-container">
+                        <input type="password" id="login-password" required >
+                        <span class="password-toggle" id="password-toggle">
+                            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
                 </div>
                 <button type="submit">Login</button>
             </form>
-        </div>
-
-        <div id="signupForm" class="form-section">
-            <h2>Create Account</h2>
-            <form id="signup-form">
-                <div class="input-group">
-                    <label for="signup-name">Name</label>
-                    <input type="text" id="signup-name" required>
-                </div>
-                <div class="input-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" required>
-                </div>
-                <div class="input-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" required>
-                </div>
-                <div class="input-group">
-                    <label for="signup-confirm-password">Confirm Password</label>
-                    <input type="password" id="signup-confirm-password" required>
-                </div>
-                <button type="submit">Sign Up</button>
-            </form>
+            
         </div>
     </div>
 

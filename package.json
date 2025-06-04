@@ -1,6 +1,6 @@
 {
     "name": "ai-chat-assistant",
-    "version": "1.0.0",
+    "version": "2.5.0",
     "description": "AI Chat Assistant with Claude and ChatGPT",
     "main": "main/main.js",
     "homepage": "https://github.com/devarsl/AI-Dual-Console",
@@ -23,8 +23,6 @@
     },
     "dependencies": {
         "ai-chat-assistant": "file:",
-        "bcrypt": "^5.1.1",
-        "better-sqlite3": "^9.6.0",
         "electron-updater": "^6.1.7"
     },
     "devDependencies": {
